@@ -37,7 +37,6 @@ Create consumer for topic:
 ```
 .\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic <topic-name> --from-beginning
 ```
-```
 or with key:
 ```
 .\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic <topic-name> --from-beginning -property "key.separator= - " --property "print.key=true"
