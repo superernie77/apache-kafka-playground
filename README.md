@@ -50,3 +50,11 @@ Command to List consumers:
 ```
 ./kafka-consumer-groups.sh --bootstrap-server localhost:9092 --list
 ```
+View log File on windows:
+```
+./kafka-run-class.bat kafka.tools.DumpLogSegments --deep-iteration --files c:/tmp/kafka-logs/<topic-name>-0/00000000000000000000.log
+```
+How to start a new server instance:
+1. copy server.properties under new name (e.g. server-2.properties)
+2. Change properties in new file: log.dirs, port number for listener and broker.id
+3 Start server with new properties file
