@@ -44,7 +44,7 @@ or with key:
 
 Command to List all topics:
 ```
-./kafka-topics.sh --zookeeper localhost:2181 --list
+./kafka-topics.bat --zookeeper localhost:2181 --list
 ```
 Command to List consumers:
 ```
@@ -58,3 +58,12 @@ How to start a new server instance:
 1. copy server.properties under new name (e.g. server-2.properties)
 2. Change properties in new file: log.dirs, port number for listener and broker.id
 3 Start server with new properties file
+
+How to show topics + partions + in-sync-replicas (ISR)
+```
+./kafka-topics.bat --zookeeper localhost:2181 -- describe
+```
+or partitions for a single topic:
+```
+./kafka-topics.bat --zookeeper localhost:2181 -- describe --topic [topicname]
+```
