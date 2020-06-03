@@ -9,12 +9,16 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MessageProducer {
 
-	private String topicName = "test-topic";
+	private static String topicName = "test-topic";
 
 	private KafkaProducer<String, String> kafkaProducer;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MessageProducer.class);
 
 	public MessageProducer(Map<String, Object> propsMap) {
 		kafkaProducer = new KafkaProducer<String, String>(propsMap);
@@ -33,20 +37,21 @@ public class MessageProducer {
 		ProducerRecord<String, String> record = new ProducerRecord<String, String>(topicName, key, value);
 		try {
 			RecordMetadata metadata =  kafkaProducer.send(record).get();
-			System.out.println("Partition: "+metadata.partition()+", offset:"+metadata.offset());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
+			LOG.info("Message {} sent with key {}.", record.value(), record.key());
+			LOG.info("Partition: {}, offset: {}",metadata.partition(),metadata.offset());
+		} catch (Exception  e) {
+			LOG.error("Exception sending message {}", e.getMessage(), e);
+		} 
 	}
 
 	public static void main(String[] args) {
-
+		
+		if (args.length > 0) {
+			topicName = args[0];
+		}
+		
 		MessageProducer producer = new MessageProducer(propsMap());
-		
 		producer.publishMessage(null, "Test");
-		
 	}
 
 }
