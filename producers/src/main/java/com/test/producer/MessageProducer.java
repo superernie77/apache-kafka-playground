@@ -42,8 +42,14 @@ public class MessageProducer {
 		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 		
-		
+		// 0, 1 or all. 
+		// 0 = i don't care if this worked
+		// 1 = leader must have gotten the record
+		// all = all replicas need to be in sync (exact number in broker setting min.insync.replicas)
 		props.put(ProducerConfig.ACKS_CONFIG, "all");
+		
+		props.put(ProducerConfig.RETRIES_CONFIG, 10); // number of retries
+		props.put(ProducerConfig.RECONNECT_BACKOFF_MS_CONFIG, 3000); // retry every 3000ms
 		return props;
 
 	}
