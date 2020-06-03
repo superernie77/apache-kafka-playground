@@ -31,12 +31,19 @@ public class MessageProducer {
 	public MessageProducer(Map<String, Object> propsMap) {
 		kafkaProducer = new KafkaProducer<String, String>(propsMap);
 	}
+	
+	 public void close(){
+	        kafkaProducer.close();
+	    }
 
-	private static Map<String, Object> propsMap() {
+	public static Map<String, Object> propsMap() {
 		Map<String, Object> props = new HashMap<String, Object>();
 		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
 		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		
+		
+		props.put(ProducerConfig.ACKS_CONFIG, "all");
 		return props;
 
 	}
@@ -57,7 +64,7 @@ public class MessageProducer {
 		} 
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		
 		if (args.length > 0) {
 			topicName = args[0];
@@ -66,7 +73,8 @@ public class MessageProducer {
 		MessageProducer producer = new MessageProducer(propsMap());
 		producer.publishMessage(null, "Test");
 		
-		producer.publishMessageAsync(null, "Test Async");;
+		producer.publishMessageAsync(null, "Test Async");
+		Thread.sleep(3000); // otherwise async call doesn't finish before main thread shuts down
 	}
 
 }
