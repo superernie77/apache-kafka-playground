@@ -2,8 +2,8 @@ package com.test.producer;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -19,6 +19,14 @@ public class MessageProducer {
 	private KafkaProducer<String, String> kafkaProducer;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(MessageProducer.class);
+	
+	private Callback callback = (metadata, exception) -> {
+		if (exception != null) {
+			LOG.error("Exception sending message {}", exception.getMessage(), exception);
+		} else {
+			LOG.info("Partition: {}, offset: {}",metadata.partition(),metadata.offset());
+		}
+	};
 
 	public MessageProducer(Map<String, Object> propsMap) {
 		kafkaProducer = new KafkaProducer<String, String>(propsMap);
@@ -31,6 +39,11 @@ public class MessageProducer {
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 		return props;
 
+	}
+	
+	public void publishMessageAsync(String key, String value) {
+		ProducerRecord<String, String> record = new ProducerRecord<String, String>(topicName, key, value);
+		kafkaProducer.send(record, callback);
 	}
 
 	public void publishMessage(String key, String value) {
@@ -52,6 +65,8 @@ public class MessageProducer {
 		
 		MessageProducer producer = new MessageProducer(propsMap());
 		producer.publishMessage(null, "Test");
+		
+		producer.publishMessageAsync(null, "Test Async");;
 	}
 
 }
