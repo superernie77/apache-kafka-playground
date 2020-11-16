@@ -73,6 +73,8 @@ public class MessageProducer {
 	public static void main(String[] args) throws InterruptedException {
 		
 		if (args.length > 0) {
+			
+			
 			topicName = args[0];
 		}
 		
