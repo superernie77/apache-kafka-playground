@@ -8,8 +8,8 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>10</maven.compiler.target>
+		<maven.compiler.source>10</maven.compiler.source>
 	</properties>
 
 	<dependencies>
@@ -30,5 +30,6 @@
 
 	<modules>
 		<module>producers</module>
+		<module>consumer</module>
 	</modules>
 </project>
