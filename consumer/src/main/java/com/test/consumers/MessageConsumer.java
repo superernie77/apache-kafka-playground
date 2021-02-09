@@ -34,6 +34,13 @@ public class MessageConsumer {
 		propsMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		propsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, "messageconsumer");
+		
+		// max interval without poll before a rebalance is triggered. Default is 5min
+		propsMap.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, "5000");
+		
+		// milliseconds until messages are marked as commited between pools
+		// if this is too big, messages might be procressed twice if consumer crashes
+		propsMap.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 10000);
 
 		return propsMap;
 	}
@@ -63,3 +70,5 @@ public class MessageConsumer {
 	}
 
 }
+
+
