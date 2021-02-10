@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -16,7 +15,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oracle.tools.packager.Log;
 
 public class MessageConsumer {
 
@@ -25,8 +23,7 @@ public class MessageConsumer {
 	private KafkaConsumer<String, String> kafkaConsumer;
 
 	private String topicName = "test-topic";
-	
-	private Map<TopicPartition, OffsetAndMetadata > offsetmap = new HashMap<>();
+
 
 	public MessageConsumer(Map<String, Object> propsMap) {
 		kafkaConsumer = new KafkaConsumer<>(propsMap);
@@ -42,9 +39,7 @@ public class MessageConsumer {
 		
 		// max interval without poll before a rebalance is triggered. Default is 5min
 		propsMap.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, "5000");
-		
-		// enable manual commit
-		propsMap.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+	
 		
 		return propsMap;
 	}
@@ -58,17 +53,7 @@ public class MessageConsumer {
 				records.forEach((record) -> {
 					logger.info("Consumer Record Key is {} and the value is {} and the partition is {}", record.key(),
 							record.value(), record.partition());
-					
-					// save processed records in map
-					offsetmap.put(new TopicPartition(record.topic(), record.partition()), new OffsetAndMetadata(record.offset()+1, null));
 				});
-				
-				if(records.count() > 0) {
-					// manually commit records from the offsetmap
-					kafkaConsumer.commitSync(offsetmap);
-					// same is possibel for commitAsync
-					
-				}
 			}
 		} catch (Exception ex) {
 			logger.error("exception during poll.");
