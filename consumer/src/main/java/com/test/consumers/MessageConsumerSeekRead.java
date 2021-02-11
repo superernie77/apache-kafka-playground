@@ -15,9 +15,9 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MessageConsumerSyncCommit {
+public class MessageConsumerSeekRead {
 
-	private static final Logger logger = LoggerFactory.getLogger(MessageConsumerSyncCommit.class);
+	private static final Logger logger = LoggerFactory.getLogger(MessageConsumerSeekRead.class);
 
 	private KafkaConsumer<String, String> kafkaConsumer;
 
@@ -25,7 +25,7 @@ public class MessageConsumerSyncCommit {
 	
 	private Map<TopicPartition, OffsetAndMetadata > offsetmap = new HashMap<>();
 
-	public MessageConsumerSyncCommit(Map<String, Object> propsMap) {
+	public MessageConsumerSeekRead(Map<String, Object> propsMap) {
 		kafkaConsumer = new KafkaConsumer<>(propsMap);
 	}
 
@@ -75,7 +75,7 @@ public class MessageConsumerSyncCommit {
 	}
 
 	public static void main(String[] args) {
-		MessageConsumerSyncCommit messageConsumer = new MessageConsumerSyncCommit(buildConsumerProperties());
+		MessageConsumerSeekRead messageConsumer = new MessageConsumerSeekRead(buildConsumerProperties());
 		messageConsumer.pollKafka();
 	}
 

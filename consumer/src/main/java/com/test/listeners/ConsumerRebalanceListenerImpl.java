@@ -23,7 +23,8 @@ public class ConsumerRebalanceListenerImpl implements ConsumerRebalanceListener 
 	@Override
 	public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
 		logger.info("onPartAssigned {}", partitions);
-		consumer.seekToBeginning(partitions); // read all available messages when assigned newly
+		//consumer.seekToBeginning(partitions); // read all available messages when assigned newly
+		consumer.seekToEnd(partitions); // only read messags from now
 	}
 
 	@Override

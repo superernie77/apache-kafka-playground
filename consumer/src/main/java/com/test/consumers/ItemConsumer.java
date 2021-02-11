@@ -15,17 +15,21 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MessageConsumerSyncCommit {
+import com.fasterxml.jackson.databind.deser.std.NumberDeserializers.IntegerDeserializer;
+import com.test.deserializer.ItemDeserializer;
+import com.test.domain.Item;
 
-	private static final Logger logger = LoggerFactory.getLogger(MessageConsumerSyncCommit.class);
 
-	private KafkaConsumer<String, String> kafkaConsumer;
+public class ItemConsumer {
 
-	private String topicName = "test-topic";
-	
-	private Map<TopicPartition, OffsetAndMetadata > offsetmap = new HashMap<>();
+	private static final Logger logger = LoggerFactory.getLogger(ItemConsumer.class);
 
-	public MessageConsumerSyncCommit(Map<String, Object> propsMap) {
+	private KafkaConsumer<Integer, Item> kafkaConsumer;
+
+	private String topicName = "item-topic";
+
+
+	public ItemConsumer(Map<String, Object> propsMap) {
 		kafkaConsumer = new KafkaConsumer<>(propsMap);
 	}
 
@@ -33,16 +37,14 @@ public class MessageConsumerSyncCommit {
 		Map<String, Object> propsMap = new HashMap<String, Object>();
 
 		propsMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092,localhost:9093,localhost:9094");
-		propsMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-		propsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-		propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, "messageconsumer");
-
+		propsMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class.getName());
+		propsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ItemDeserializer.class.getName());
+		propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, "itemsgroupid");
+		
 		// max interval without poll before a rebalance is triggered. Default is 5min
 		propsMap.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, "5000");
-
-		// enable manual commit
-		propsMap.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-
+	
+		
 		return propsMap;
 	}
 
@@ -51,20 +53,11 @@ public class MessageConsumerSyncCommit {
 		Duration timeOut = Duration.of(100, ChronoUnit.MILLIS);
 		try {
 			while (true) {
-				ConsumerRecords<String, String> records = kafkaConsumer.poll(timeOut);
+				ConsumerRecords<Integer, Item> records = kafkaConsumer.poll(timeOut);
 				records.forEach((record) -> {
 					logger.info("Consumer Record Key is {} and the value is {} and the partition is {}", record.key(),
 							record.value(), record.partition());
-					// save processed records in map
-					offsetmap.put(new TopicPartition(record.topic(), record.partition()), new OffsetAndMetadata(record.offset()+1, null));
 				});
-
-				if (records.count() > 0) {
-					// manually commit records from the offsetmap
-					kafkaConsumer.commitSync(offsetmap);
-					// same is possibel for commitAsync
-
-				}
 			}
 		} catch (Exception ex) {
 			logger.error("exception during poll.");
@@ -75,8 +68,10 @@ public class MessageConsumerSyncCommit {
 	}
 
 	public static void main(String[] args) {
-		MessageConsumerSyncCommit messageConsumer = new MessageConsumerSyncCommit(buildConsumerProperties());
+		ItemConsumer messageConsumer = new ItemConsumer(buildConsumerProperties());
 		messageConsumer.pollKafka();
 	}
 
 }
+
+
