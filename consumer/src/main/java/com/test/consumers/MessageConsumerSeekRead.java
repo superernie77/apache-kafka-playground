@@ -22,8 +22,8 @@ public class MessageConsumerSeekRead {
 	private KafkaConsumer<String, String> kafkaConsumer;
 
 	private String topicName = "test-topic";
-	
-	private Map<TopicPartition, OffsetAndMetadata > offsetmap = new HashMap<>();
+
+	private Map<TopicPartition, OffsetAndMetadata> offsetmap = new HashMap<>();
 
 	public MessageConsumerSeekRead(Map<String, Object> propsMap) {
 		kafkaConsumer = new KafkaConsumer<>(propsMap);
@@ -56,13 +56,14 @@ public class MessageConsumerSeekRead {
 					logger.info("Consumer Record Key is {} and the value is {} and the partition is {}", record.key(),
 							record.value(), record.partition());
 					// save processed records in map
-					offsetmap.put(new TopicPartition(record.topic(), record.partition()), new OffsetAndMetadata(record.offset()+1, null));
+					offsetmap.put(new TopicPartition(record.topic(), record.partition()),
+							new OffsetAndMetadata(record.offset() + 1, null));
 				});
 
 				if (records.count() > 0) {
 					// manually commit records from the offsetmap
 					kafkaConsumer.commitSync(offsetmap);
-					// same is possibel for commitAsync
+					// same is possible for commitAsync
 
 				}
 			}
