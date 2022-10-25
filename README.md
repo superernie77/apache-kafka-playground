@@ -67,3 +67,13 @@ or partitions for a single topic:
 ```
 ./kafka-topics.bat --zookeeper localhost:2181 -- describe --topic [topicname]
 ```
+
+
+Some interesting facts about Kafka that shouldn't be forgotten:
+- Kafka is not a messaging system
+- Clients pull records from Kafka
+- Order of the messages is guaranteed
+- Records are persisted on the harddrive of the broker in a log file
+- Records are immutable
+- Consumers in the same groups work on the same topic (horizontal scaling)
+- Consumer in different groups get all records from a topic
